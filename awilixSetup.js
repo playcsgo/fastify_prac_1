@@ -1,4 +1,5 @@
 // awilixSetup.js
+const awilix = require('awilix')
 const { createContainer, asFunction, asClass, asValue } = require('awilix')
 const fp = require('fastify-plugin')
 const connectMongo = require('./config/mongoose')
@@ -11,8 +12,8 @@ const UserController = require('./controllers/user-controllers')
 function awilixPlugin(fastify, opts, done) {
 
   const container = createContainer({
-    strict: true,
-    injectionMode: 'CLASSIC',
+    // strict: true,
+    injectionMode: awilix.InjectionMode.PROXY,
   })
 
   container.register({

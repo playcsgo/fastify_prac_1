@@ -1,6 +1,6 @@
 // server.js
 const fastify = require('fastify')({
-  logger: true
+  logger: false
 })
 const awilixPlugin = require('./awilixSetup')
 const userRoutes = require('./routes/user')

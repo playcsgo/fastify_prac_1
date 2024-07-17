@@ -1,11 +1,14 @@
 // controllers/user-controller
 class UserController {
   constructor({ userModel }) {
+    console.log('[this from constructor]', this)
     this.userModel = userModel
+    this.createUser = this.createUser.bind(this)
   }
 
   async createUser(request, reply) {
     const { name, email, password, found } =  request.body
+    console.log('[this from createUser]', this)
     const createdUser = await this.userModel.create({
       name,
       email,
@@ -13,7 +16,7 @@ class UserController {
       found: Number(found)
     })
 
-    reply.json({ createdUser })
+    return { createdUser }
   }
 
   //other method
