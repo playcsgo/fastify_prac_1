@@ -15,10 +15,9 @@ fastify.register(userRoutes)
 
 
 // init workers
-// const { work1 } = fastify.di.cradle
-// // 初始化 Worker
 fastify.addHook('onReady', async () => {
-  await fastify.di.cradle.work1;
+  await fastify.di.cradle.work1
+  await fastify.di.cradle.work2
 });
 
 

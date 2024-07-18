@@ -1,7 +1,5 @@
-// const mongoose = require('mongoose')
-// const userModel = require('../models/user')
-
-class work1 {
+// work2
+class work2 {
   constructor({ rabbitMQ, mongoose, userModel }) {
     this.rabbitMQ = rabbitMQ
     this.userModel = userModel
@@ -12,7 +10,7 @@ class work1 {
   async consumeBet() {
     this.mongoose
     await this.rabbitMQ.consumeQueue('bet_que', this.processBet.bind(this))
-    console.log('work1 ready..')
+    console.log('work2 ready..')
   }
 
   async processBet(msg, ack) {
@@ -26,9 +24,18 @@ class work1 {
     }
     await user.save()
     ack()
-
-    console.log(`prcoessBet ${msg.fields.deliveryTag} consume by work1 with PID: ${process.pid}`)
+    console.log(`prcoessBet ${msg.fields.deliveryTag} consume by work2 with PID: ${process.pid}`)
   }
 }
 
-module.exports = work1
+module.exports = work2
+
+/*
+
+msg.fields: {
+    consumerTag: 'amq.ctag-rHzowJQ6dirTPNCGteIpnw',
+    deliveryTag: 1,
+    redelivered: false,
+    exchange: '',
+    routingKey: 'bet_que'
+*/

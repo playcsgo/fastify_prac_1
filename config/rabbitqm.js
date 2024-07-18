@@ -29,7 +29,7 @@ class RabbitMQ {
     await channel.assertQueue(queueName, { durable: true })
     channel.consume(queueName, (msg) => {
       callback(msg, () => channel.ack(msg))
-    }, { noAck: true })
+    }, { noAck: false })
   }
 }
 
