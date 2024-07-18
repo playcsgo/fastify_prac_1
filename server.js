@@ -9,10 +9,17 @@ const apiErrorHandler = require('./error/api-error-handler')
 
 // register kits
 fastify.register(awilixPlugin)
+
+// register routes
 fastify.register(userRoutes)
 
-// routes route
 
+// init workers
+// const { work1 } = fastify.di.cradle
+// // 初始化 Worker
+fastify.addHook('onReady', async () => {
+  await fastify.di.cradle.work1;
+});
 
 
 // connect mongoDB with Hook.onReady

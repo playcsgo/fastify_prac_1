@@ -16,4 +16,8 @@ node_modules
 # dotenv
 .env
 
+# other info
+check
+fastify.zip
+
 # browser-sync start --proxy "localhost:3000" --files "./**/**/**"

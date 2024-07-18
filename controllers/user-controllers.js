@@ -1,7 +1,8 @@
 // controllers/user-controller with 6 RabbitMQ patterns
 class UserController {
-  constructor({ userModel }) {
+  constructor({ userModel, rabbitMQ }) {
     this.userModel = userModel
+    this.rabbitMQ = rabbitMQ
     this.createUser = this.createUser.bind(this)
     this.getUser = this.getUser.bind(this)
     this.betOnetoFour = this.betOnetoFour.bind(this)
@@ -45,22 +46,32 @@ class UserController {
 
 
   // 2. Work Queues - high concurrent requests
+  // async betOnetoFour(request, reply) {
+  //   const { betAmount, betNumber, id } = request.body
+  //   const lottery = Number(Math.floor(Math.random() * 4) + 1)
+  //   const user = await this.userModel.findById(id)
+  //   if (Number(betNumber) === lottery) {
+  //     user.found += betAmount * 3.8
+  //   } else {
+  //     user.found -= betAmount
+  //   }
+  //   const updatedUser = await user.save()
+  //   return updatedUser
+  // }
+  // -----------------------------
   async betOnetoFour(request, reply) {
     const { betAmount, betNumber, id } = request.body
-    const lottery = Number(Math.floor(Math.random() * 4) + 1)
-    const user = await this.userModel.findById(id)
-    if (Number(betNumber) === lottery) {
-      user.found += betAmount * 3.8
-    } else {
-      user.found -= betAmount
-    }
-    const updatedUser = await user.save()
-    return updatedUser
+    const msg = JSON.stringify({ betAmount, betNumber, id })
+    
+    await this.rabbitMQ.sendToMQ('bet_que', msg)
+    return reply.send({ message: 'received betOnetoFour' })
   }
+
 
   // 3. Publish/Subscribe - login notice to friend or join room notice
 
   // 4. Routing - message to a specific user
+  // 像之前做的 升級裝備跟充值的那個用法. 
 
   // 5. Topics - messqage to the same room
 
