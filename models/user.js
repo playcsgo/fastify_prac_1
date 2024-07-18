@@ -4,7 +4,7 @@ module.exports = ({ mongoose }) => {
     name: {type: String, required: true},
     email: {type: String, required: true},
     password: {type: String, required: true},
-    found: { type: Number, required:true, default: 2000 },
+    found: { type: Number, required:true, default: 5000 },
     roomNumber: { type: Number, required:true, default: 0 },
     friends: [{type: { type: mongoose.Types.ObjectId,
       ref: 'User' } }],

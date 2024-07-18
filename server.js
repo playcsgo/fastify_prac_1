@@ -6,6 +6,9 @@ const awilixPlugin = require('./awilixSetup')
 const userRoutes = require('./routes/user')
 const apiErrorHandler = require('./error/api-error-handler')
 
+// apply worker_threads
+// const { Worker } = require('worker_threads')
+
 
 // register kits
 fastify.register(awilixPlugin)

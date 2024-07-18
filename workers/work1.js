@@ -27,7 +27,7 @@ class work1 {
     await user.save()
     ack()
 
-    console.log(`prcoessBet ${msg.fields.deliveryTag} consume by work1 with PID: ${process.pid}`)
+    console.log(`prcoessBet ${msg.fields.consumerTag} consume by work1 with PID: ${process.pid}`)
   }
 }
 

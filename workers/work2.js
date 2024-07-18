@@ -1,4 +1,6 @@
 // work2
+// const { parentPort } = require('worker_threads')
+
 class work2 {
   constructor({ rabbitMQ, mongoose, userModel }) {
     this.rabbitMQ = rabbitMQ
@@ -24,7 +26,7 @@ class work2 {
     }
     await user.save()
     ack()
-    console.log(`prcoessBet ${msg.fields.deliveryTag} consume by work2 with PID: ${process.pid}`)
+    console.log(`prcoessBet ${msg.fields.consumerTag} consume by work2 with PID: ${process.pid}`)
   }
 }
 
