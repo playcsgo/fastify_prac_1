@@ -11,14 +11,15 @@ class UserController {
   // 1. Simple Queue - NOT high concurrent requests
   async createUser(request, reply) {
     const { name, email, password, found } =  request.body
-    const createdUser = await this.userModel.create({
+    const result = await this.userModel.create({
       name,
       email,
       password,
       found: Number(found)
     })
-
-    return { createdUser }
+    const createdUser = result.toObject() // for mongoDB object
+    delete createdUser.password
+    reply.send(createdUser) 
   }
 
   async addOrRemoveFriend(request, reply) {

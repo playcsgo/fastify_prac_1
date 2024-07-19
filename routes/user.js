@@ -1,12 +1,15 @@
 // routes/user.js
-module.exports = function userRoutes (fastify, opts, done) {
+module.exports = function userRoutes (fastify, opts, done, userController) {
   
+  // because routes register with prefix '/v1'
+  // POST '/users' should be POST '/v1/users' while requesting
+
   // create user
-  fastify.post('/users', async(request, reply) => {
-    const { createUser } = fastify.di.cradle.userController
-    const createdUser = await createUser(request, reply)
-    reply.send({ data: createdUser })
-  })
+  fastify.post(
+    '/users',
+    { schema: fastify.di.cradle.createUserSchema }, 
+    (request, reply) => { fastify.di.cradle.userController.createUser(request, reply) }
+    )
 
   // getUser
   fastify.get('/:id', async(request, reply) => {

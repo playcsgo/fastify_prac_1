@@ -3,34 +3,38 @@ const fastify = require('fastify')({
   logger: false
 })
 const awilixPlugin = require('./awilixSetup')
-const userRoutes = require('./routes/user')
 const apiErrorHandler = require('./error/api-error-handler')
-
+const userRoutes = require('./routes/user')
 // apply worker_threads
 // const { Worker } = require('worker_threads')
 
 
-// register kits
+// register plugins
 fastify.register(awilixPlugin)
 
-// register routes
-fastify.register(userRoutes)
 
+// register services
+fastify.setErrorHandler(apiErrorHandler)
+
+// register routes
+fastify.register(userRoutes, { prefix: '/v1' })
 
 // init workers
 fastify.addHook('onReady', async () => {
-  await fastify.di.cradle.work1
-  await fastify.di.cradle.work2
-});
+  try {
+    // init works
+    await fastify.di.cradle.work1
+    await fastify.di.cradle.work2
 
+    // check mongoDB connection
+    await fastify.di.cradle.mongoose    
 
-// connect mongoDB with Hook.onReady
-fastify.addHook('onReady', async () => {
-  // Some async code
-  await fastify.di.cradle.mongoose
+  } catch (err) {
+    fastify.log.error('Error Hook onReady:', err);
+    process.exit(1);
+  }
 })
 
-fastify.setErrorHandler(apiErrorHandler)
 
 // Run the server! '0.0.0.0' or :: for all IPV6
 fastify.listen({ port: 3000, host: '0.0.0.0' }, function (err, address) {
