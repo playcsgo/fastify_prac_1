@@ -32,7 +32,7 @@ function awilixPlugin(fastify, opts, done) {
     userRoutes: asFunction(userRoutes).singleton(),
 
     // json-schema
-    createUserSchema: asValue(JsonSchema.createUserSchema)
+    jsonSchema: asValue(JsonSchema)
   })
 
   // other Dependency

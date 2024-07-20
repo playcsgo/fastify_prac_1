@@ -5,9 +5,8 @@ module.exports = function userRoutes (fastify, opts, done, userController) {
   // POST '/users' should be POST '/v1/users' while requesting
 
   // create user
-  fastify.post(
-    '/users',
-    { schema: fastify.di.cradle.createUserSchema }, 
+  fastify.post('/users',
+    { schema: fastify.di.cradle.jsonSchema.postUsers }, 
     (request, reply) => { fastify.di.cradle.userController.createUser(request, reply) }
     )
 

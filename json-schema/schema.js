@@ -1,5 +1,5 @@
 
-const createUserSchema = {
+const postUsers = {
   body: {
     type: 'object',
     required: ['name', 'email', 'password'],
@@ -33,60 +33,14 @@ const createUserSchema = {
   }
 }
 
+const post_betonetofour = {
+  body: {
 
+  }
+}
 
 
 module.exports = {
-  createUserSchema,
+  postUsers,
+  post_betonetofour
 }
-
-
-/*
-schemaName = {
-  // Request area layer_1: type, required, properties
-  ...
-  ...
-
-  // respnse area
-  layer_1: 
-  response_status_code, 
-  additionalProperties: false // 不允許包含未定義的屬性 
-  not: {
-      required: ['admin']
-    }
-
-  layer_2: type: , required, properties, 
-
-}
-
-
-
-
-Request Body:
-{
-	"name": "user4",
-    "email": "user4@gmail.com",
-    "password": "test",
-    "found": "5000"
-}
-
-Response:
-200, it should be 
-{
-    "data": {
-        "createdUser": {
-            "name": "user4",
-            "email": "user4@gmail.com",
-            "password": "test",
-            "found": 5000,
-            "roomNumber": 0,
-            "_id": "6699d831bc4345821f58f3c0",
-            "friends": [],
-            "createdAt": "2024-07-19T03:06:25.701Z",
-            "__v": 0
-        }
-    }
-}
-
-
-*/
