@@ -23,8 +23,8 @@ fastify.register(userRoutes, { prefix: '/v1' })
 fastify.addHook('onReady', async () => {
   try {
     // init works
-    await fastify.di.cradle.work1
-    await fastify.di.cradle.work2
+    await fastify.di.cradle.worker1
+    await fastify.di.cradle.worker2
 
     // check mongoDB connection
     await fastify.di.cradle.mongoose    

@@ -5,9 +5,9 @@ const fp = require('fastify-plugin')
 const connectMongo = require('./config/mongoose')
 const UserModel = require('./models/user')
 const UserController = require('./controllers/user-controllers')
-const RabbitMQ = require('./config/rabbitqm')
-const Work1 = require('./workers/work1')
-const Work2 = require('./workers/work2')
+const RabbitMQ = require('./config/rabbitmq')
+const Worker1 = require('./workers/worker1')
+const Worker2 = require('./workers/worker2')
 const userRoutes = require('./routes/user')
 
 const JsonSchema = require('./json-schema/schema')
@@ -27,8 +27,8 @@ function awilixPlugin(fastify, opts, done) {
     userModel: asFunction(UserModel).scoped(),
     userController: asClass(UserController).scoped(),
     rabbitMQ: asClass(RabbitMQ).singleton(),
-    work1: asClass(Work1).singleton(),
-    work2: asClass(Work2).singleton(),
+    worker1: asClass(Worker1).singleton(),
+    worker2: asClass(Worker2).singleton(),
     userRoutes: asFunction(userRoutes).singleton(),
 
     // json-schema

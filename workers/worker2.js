@@ -1,7 +1,7 @@
-// const mongoose = require('mongoose')
-// const userModel = require('../models/user')
+// work2
+// const { parentPort } = require('worker_threads')
 
-class work1 {
+class worker2 {
   constructor({ rabbitMQ, mongoose, userModel }) {
     this.rabbitMQ = rabbitMQ
     this.userModel = userModel
@@ -12,13 +12,17 @@ class work1 {
   async consumeBet() {
     this.mongoose
     await this.rabbitMQ.consumeQueue('bet_que', this.processBet.bind(this))
-    console.log('work1 ready..')
+    console.log('worker2 ready..')
   }
 
   async processBet(msg, ack) {
     const { betAmount, betNumber, id } = JSON.parse(msg.content.toString())
     const lottery = Number(Math.floor(Math.random() * 4) + 1)
     const user = await this.userModel.findById(id)
+    if (!user) {
+      ack()
+      throw new Error('user Not Found')
+    }
     if (Number(betNumber) === lottery) {
       user.found += betAmount * 3.8
     } else {
@@ -26,9 +30,18 @@ class work1 {
     }
     await user.save()
     ack()
-
-    console.log(`prcoessBet ${msg.fields.consumerTag} consume by work1 with PID: ${process.pid}`)
+    console.log(`prcoessBet ${msg.fields.consumerTag} consume by worker2 with PID: ${process.pid}`)
   }
 }
 
-module.exports = work1
+module.exports = worker2
+
+/*
+
+msg.fields: {
+    consumerTag: 'amq.ctag-rHzowJQ6dirTPNCGteIpnw',
+    deliveryTag: 1,
+    redelivered: false,
+    exchange: '',
+    routingKey: 'bet_que'
+*/

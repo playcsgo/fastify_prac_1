@@ -4,7 +4,7 @@
 - 使用 fastify 框架
 - 使用 awilix 實現 Dependency Injection 
 - 使用 RabbitMQ 派發任務 (目前只有一條API有使用)
-- 使用 work1 and work2 進行RabbitMQ message處理
+- 使用 worker1 and worker2 進行RabbitMQ message處理
 
 ## 目前開放API
 please see routes for details.
