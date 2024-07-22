@@ -70,10 +70,7 @@ class UserController {
     const channel = await this.rabbitMQ.getChannel()
     const replyQueName = 'reply_createdUser'
     await channel.assertQueue(replyQueName, { durable: false })
-    await channel.consume(replyQueName, (msg) => {
-      const createdUser = JSON.parse(msg.content.toString())
-      reply.send(createdUser)
-    }, {noAck: true})
+    
     
     // send createUser task to worker
     channel.sendToQueue('create_User', Buffer.from(msg), {
@@ -81,6 +78,15 @@ class UserController {
       correlationId: correlationId,
       replyTo: replyQueName
     }) 
+
+    //
+    await channel.consume(replyQueName, (msg) => {
+      if (msg) {
+        const createdUser = JSON.parse(msg.content.toString())
+        reply.status(201).send(createdUser)
+        channel.deleteQueue(replyQueName)
+      }
+    })
   }
 
 
