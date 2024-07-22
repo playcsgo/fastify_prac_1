@@ -12,6 +12,7 @@ class worker1 {
   async consumeBet() {
     this.mongoose
     await this.rabbitMQ.consumeQueue('bet_que', this.processBet.bind(this))
+    await this.rabbitMQ.consumeQueue('create_User', this.createUser.bind(this))  // 加上consume create_user的工作
     console.log('worker1 ready..')
   }
 
@@ -31,6 +32,28 @@ class worker1 {
     ack()
 
     console.log(`prcoessBet ${msg.fields.consumerTag} consume by worker1 with PID: ${process.pid}`)
+  }
+
+  async createUser(msg, ack) {
+    const { name, email, password, found, correlationId } = JSON.parse(msg.content.toString())
+    const result = await this.userModel.create({
+      name,
+      email,
+      password,
+      found: Number(found)
+    })
+    const createdUser = result.toObject() // for mongoDB object
+    delete createdUser.password
+    console.log('work1 createUser')
+    ack()
+
+    // reply to controller
+    const replyMsg = JSON.stringify(createdUser)
+    this.rabbitMQ.sendToMQ(
+      msg.properties.replyTo,
+      replyMsg,
+      { correlationId: msg.properties.correlationId }
+      )
   }
 }
 

@@ -9,6 +9,7 @@ const RabbitMQ = require('./config/rabbitmq')
 const Worker1 = require('./workers/worker1')
 const Worker2 = require('./workers/worker2')
 const userRoutes = require('./routes/user')
+const { v4: uuidv4 } = require('uuid')
 
 const JsonSchema = require('./json-schema/schema')
 
@@ -30,6 +31,7 @@ function awilixPlugin(fastify, opts, done) {
     worker1: asClass(Worker1).singleton(),
     worker2: asClass(Worker2).singleton(),
     userRoutes: asFunction(userRoutes).singleton(),
+    uuidv4: asValue(uuidv4),
 
     // json-schema
     jsonSchema: asValue(JsonSchema)

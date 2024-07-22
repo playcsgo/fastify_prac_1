@@ -8,7 +8,7 @@ async function apiErrorHandler(error, request, reply, next) {
   if (error instanceof ApiError) {
     reply.status(error.code).send({ error: error.message });
   } else {
-    reply.status(500).send({ error: 'something went wrong in my code' });
+    reply.status(500).send({ error: 'something went wrong in server code' });
   }
   next()
 }

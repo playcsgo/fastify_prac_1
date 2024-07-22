@@ -1,27 +1,15 @@
 // controllers/user-controller with 6 RabbitMQ patterns
 class UserController {
-  constructor({ userModel, rabbitMQ }) {
+  constructor({ userModel, rabbitMQ, uuidv4 }) {
     this.userModel = userModel
     this.rabbitMQ = rabbitMQ
     this.createUser = this.createUser.bind(this)
     this.getUser = this.getUser.bind(this)
     this.betOnetoFour = this.betOnetoFour.bind(this)
     this.addOrRemoveFriend = this.addOrRemoveFriend.bind(this)
+    this.uuidv4 = uuidv4
   }
   // 1. Simple Queue - NOT high concurrent requests
-  async createUser(request, reply) {
-    const { name, email, password, found } =  request.body
-    const result = await this.userModel.create({
-      name,
-      email,
-      password,
-      found: Number(found)
-    })
-    const createdUser = result.toObject() // for mongoDB object
-    delete createdUser.password
-    reply.send(createdUser) 
-  }
-
   async addOrRemoveFriend(request, reply) {
     try {
       const { id } =  request.body
@@ -43,8 +31,6 @@ class UserController {
       reply.send(err)
     }
   }
-
-
 
   // 2. Work Queues - high concurrent requests
   // async betOnetoFour(request, reply) {
@@ -68,7 +54,6 @@ class UserController {
     return reply.send({ message: 'received betOnetoFour' })
   }
 
-
   // 3. Publish/Subscribe - login notice to friend or join room notice
 
   // 4. Routing - message to a specific user
@@ -77,6 +62,28 @@ class UserController {
   // 5. Topics - messqage to the same room
 
   // 6. Request/reply pattern - check bet, check found, refound
+  async createUser(request, reply) {
+    const { name, email, password, found } =  request.body
+    const msg = JSON.stringify({ name, email, password, found })
+    // correlationId for communicate in replyQue
+    const correlationId = this.uuidv4()
+    const channel = await this.rabbitMQ.getChannel()
+    const replyQueName = 'reply_createdUser'
+    await channel.assertQueue(replyQueName, { durable: false })
+    await channel.consume(replyQueName, (msg) => {
+      const createdUser = JSON.parse(msg.content.toString())
+      reply.send(createdUser)
+    }, {noAck: true})
+    
+    // send createUser task to worker
+    channel.sendToQueue('create_User', Buffer.from(msg), {
+      durable: false,
+      correlationId: correlationId,
+      replyTo: replyQueName
+    }) 
+  }
+
+
   async getUser(request, reply) {
     try {
       const user = await this.userModel.findById(request.params.id).lean()
@@ -86,7 +93,10 @@ class UserController {
     }
   }
 
-  
+  generateUuid() {
+    return Math.random().toString()
+    //can be replaced by uuid plugin
+  }
 
 
 }
