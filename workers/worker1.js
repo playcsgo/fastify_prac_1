@@ -19,8 +19,9 @@ class worker1 {
   async processBet(msg, ack) {
     const { betAmount, betNumber, id } = JSON.parse(msg.content.toString())
     const lottery = Number(Math.floor(Math.random() * 4) + 1)
-    const user = await this.userModel.findOne( {where: { _id: id }} )
+    const user = await this.userModel.findById(id)
     if (!user) {
+      console.log('worker1 return')
       return ('user Not Found')
     }
     if (Number(betNumber) === lottery) {
@@ -35,7 +36,7 @@ class worker1 {
   }
 
   async createUser(msg, ack) {
-    const { name, email, password, found, correlationId } = JSON.parse(msg.content.toString())
+    const { name, email, password, found } = JSON.parse(msg.content.toString())
     const result = await this.userModel.create({
       name,
       email,
