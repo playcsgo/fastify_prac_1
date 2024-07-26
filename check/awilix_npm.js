@@ -89,15 +89,3 @@ router.get('/api/users/:id', container.cradle.userController.getUser)
 
 // Using  `container.cradle.userController` is actually the same as calling
 // `container.resolve('userController')` - the cradle is our proxy!
-That example is rather lengthy, but if you extract things to their proper files it becomes more manageable.
-
-Check out a working Koa example!
-
-Lifetime management
-Awilix supports managing the lifetime of instances. This means that you can control whether objects are resolved and used once, cached within a certain scope, or cached for the lifetime of the process.
-
-There are 3 lifetime types available.
-
-Lifetime.TRANSIENT: This is the default. The registration is resolved every time it is needed. This means if you resolve a class more than once, you will get back a new instance every time.
-Lifetime.SCOPED: The registration is scoped to the container - that means that the resolved value will be reused when resolved from the same scope (or a child scope).
-Lifetime.SINGLETON: The registration is always reused no matter what - that means that the resolved value is cached in the root container.

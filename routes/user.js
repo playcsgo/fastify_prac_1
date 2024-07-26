@@ -1,8 +1,15 @@
 // routes/user.js
-module.exports = function userRoutes (fastify, opts, done, userController) {
-  
+module.exports = function userRoutes (fastify, opts, done) {
   // because routes register with prefix '/v1'
   // POST '/users' should be POST '/v1/users' while requesting
+
+  //signin
+  fastify.post('/signin', 
+  { preValidation: fastify.di.cradle.fastifyPassport.authenticate('local', { session: false }) },
+  async(request, reply) => {
+    fastify.di.cradle.userController.signIn(request, reply)
+  }
+  )
 
   // create user
   fastify.post('/users',
@@ -17,11 +24,13 @@ module.exports = function userRoutes (fastify, opts, done, userController) {
     reply.send({ data: user })
   })
 
-  // user bet with found
-  fastify.post('/betonetofour', async(request, reply) => {
-    const { betOnetoFour } = fastify.di.cradle.userController
-    const user = await betOnetoFour(request, reply)
-    reply.send({ data: user })
+  // user bet
+  fastify.post('/betonetofour', 
+    { preValidation: fastify.di.cradle.middlewareAuth.apiAuthenticated },
+    async(request, reply) => {
+      const { betOnetoFour } = fastify.di.cradle.userController
+      const user = await betOnetoFour(request, reply)
+      reply.send({ data: user })
   })
 
   // user add or remove friend 
@@ -30,6 +39,9 @@ module.exports = function userRoutes (fastify, opts, done, userController) {
     const user = await addOrRemoveFriend(request, reply)
     reply.send({ data: user })
   })
+
+  // enterRoomGreeting
+  
   
   done()
 }

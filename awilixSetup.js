@@ -10,11 +10,17 @@ const Worker1 = require('./workers/worker1')
 const Worker2 = require('./workers/worker2')
 const { v4: uuidv4 } = require('uuid')
 
+// passport
+const fastifyPassport = require('@fastify/passport')
+const setPassport = require('./config/fastify-passport')
+const bcryptjs = require('bcryptjs')
 const JsonSchema = require('./json-schema/schema')
+const middlewareAuth = require('./middlwware/auth')
+const jwt = require('jsonwebtoken')
 
-
-// 使用fast-plugin 製作成 plugin, 
-// 再去server.js fastify.register
+// 使用fast-plugin 製作成 plugin,
+// 將所有的plugins 打包進container, 改名為 "di"
+// 再"一次性"的於server.js fastify.register  
 function awilixPlugin(fastify, opts, done) {
 
   const container = createContainer({
@@ -31,8 +37,17 @@ function awilixPlugin(fastify, opts, done) {
     worker2: asClass(Worker2).singleton(),
     uuidv4: asValue(uuidv4),
 
+    // passport
+    bcryptjs: asValue(bcryptjs),
+    fastifyPassport: asValue(fastifyPassport),
+    setPassport: asFunction(setPassport).singleton(),
+    jwt: asValue(jwt),
+
     // json-schema
-    jsonSchema: asValue(JsonSchema)
+    jsonSchema: asValue(JsonSchema),
+
+    //middleware_auth
+    middlewareAuth: asClass(middlewareAuth).scoped(),
   })
 
   // other Dependency

@@ -1,16 +1,27 @@
 // server.js
 const fastify = require('fastify')({
-  logger: false
+  logger: true
 })
 const awilixPlugin = require('./awilixSetup')
 const apiErrorHandler = require('./error/api-error-handler')
 const userRoutes = require('./routes/user')
+const fastifyCookie = require('@fastify/cookie');
+const fastifySession = require('@fastify/session')
+const fastifyPassport = require('@fastify/passport')
+
+
 // apply worker_threads
 // const { Worker } = require('worker_threads')
 
-
 // register plugins
 fastify.register(awilixPlugin)
+fastify.register(fastifyCookie)
+fastify.register(fastifySession, {
+  secret: 'the secret must have length 32 or greater',
+  cookie: { secure: false } // true for HTTP 
+})
+fastify.register(fastifyPassport.initialize())
+fastify.register(fastifyPassport.secureSession())
 
 
 // register services
@@ -18,6 +29,7 @@ fastify.setErrorHandler(apiErrorHandler)
 
 // register routes
 fastify.register(userRoutes, { prefix: '/v1' })
+
 
 // init workers
 fastify.addHook('onReady', async () => {
@@ -27,10 +39,13 @@ fastify.addHook('onReady', async () => {
     await fastify.di.cradle.worker2
 
     // check mongoDB connection
-    await fastify.di.cradle.mongoose    
+    await fastify.di.cradle.mongoose
+
+    // set passport stragegy
+    await fastify.di.cradle.setPassport
 
   } catch (err) {
-    fastify.log.error('Error Hook onReady:', err);
+    fastify.log.error(err);
     process.exit(1);
   }
 })

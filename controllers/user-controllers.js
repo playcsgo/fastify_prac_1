@@ -1,14 +1,32 @@
 // controllers/user-controller with 6 RabbitMQ patterns
 class UserController {
-  constructor({ userModel, rabbitMQ, uuidv4 }) {
+  constructor({ userModel, rabbitMQ, uuidv4, jwt }) {
     this.userModel = userModel
     this.rabbitMQ = rabbitMQ
     this.createUser = this.createUser.bind(this)
     this.getUser = this.getUser.bind(this)
     this.betOnetoFour = this.betOnetoFour.bind(this)
     this.addOrRemoveFriend = this.addOrRemoveFriend.bind(this)
+    this.jwt = jwt
     this.uuidv4 = uuidv4
   }
+
+  async signIn(request, reply) {
+    try {
+      const userData = request.user
+      delete userData.password
+      const token = this.jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: '7d' })
+      reply.status(200).send({
+        token,
+        userData
+      })
+    } catch(err) {
+      throw new Error(err)
+    }
+  }
+
+
+  
   // 1. Simple Queue - NOT high concurrent requests
   async addOrRemoveFriend(request, reply) {
     try {
@@ -48,7 +66,8 @@ class UserController {
   // -----------------------------
   async betOnetoFour(request, reply) {
     const { betAmount, betNumber, id } = request.body
-    const msg = JSON.stringify({ betAmount, betNumber, id })
+    const reqUser = request.user
+    const msg = JSON.stringify({ betAmount, betNumber, reqUser })
     
     await this.rabbitMQ.sendToMQ('bet_que', msg)
     return reply.send({ message: 'received betOnetoFour' })

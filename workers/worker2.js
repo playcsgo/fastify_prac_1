@@ -16,9 +16,9 @@ class worker2 {
   }
 
   async processBet(msg, ack) {
-    const { betAmount, betNumber, id } = JSON.parse(msg.content.toString())
+    const { betAmount, betNumber, reqUser } = JSON.parse(msg.content.toString())
     const lottery = Number(Math.floor(Math.random() * 4) + 1)
-    const user = await this.userModel.findById(id)
+    const user = await this.userModel.findById(reqUser._id.toString())
     if (!user) {
       ack()
       throw new Error('user Not Found')

@@ -2,10 +2,11 @@
 // const userModel = require('../models/user')
 
 class worker1 {
-  constructor({ rabbitMQ, mongoose, userModel }) {
+  constructor({ rabbitMQ, mongoose, userModel, bcryptjs }) {
     this.rabbitMQ = rabbitMQ
     this.userModel = userModel
     this.mongoose = mongoose
+    this.bcryptjs = bcryptjs
     this.consumeBet()
   }
 
@@ -17,9 +18,9 @@ class worker1 {
   }
 
   async processBet(msg, ack) {
-    const { betAmount, betNumber, id } = JSON.parse(msg.content.toString())
+    const { betAmount, betNumber, reqUser } = JSON.parse(msg.content.toString())
     const lottery = Number(Math.floor(Math.random() * 4) + 1)
-    const user = await this.userModel.findById(id)
+    const user = await this.userModel.findById(reqUser._id.toString())
     if (!user) {
       console.log('worker1 return')
       return ('user Not Found')
@@ -37,10 +38,11 @@ class worker1 {
 
   async createUser(msg, ack) {
     const { name, email, password, found } = JSON.parse(msg.content.toString())
+    const hashedPassword = await this.bcryptjs.hash(password, 10)
     const result = await this.userModel.create({
       name,
       email,
-      password,
+      password: hashedPassword,
       found: Number(found)
     })
     const createdUser = result.toObject() // for mongoDB object
