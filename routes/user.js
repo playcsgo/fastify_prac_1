@@ -18,7 +18,12 @@ module.exports = function userRoutes (fastify, opts, done) {
     )
 
   // getUser
-  fastify.get('/:id', async(request, reply) => {
+  fastify.get('/:id',
+  { 
+    preValidation: fastify.di.cradle.middlewareAuth.apiAuthenticated,
+    preHandler: fastify.di.cradle.middlewareMonitor
+  },
+  async(request, reply) => {
     const { getUser } = fastify.di.cradle.userController
     const user = await getUser(request, reply)
     reply.send({ data: user })
@@ -26,7 +31,10 @@ module.exports = function userRoutes (fastify, opts, done) {
 
   // user bet
   fastify.post('/betonetofour', 
-    { preValidation: fastify.di.cradle.middlewareAuth.apiAuthenticated },
+    { 
+      preValidation: fastify.di.cradle.middlewareAuth.apiAuthenticated,
+      preHandler: fastify.di.cradle.middlewareMonitor
+    },
     async(request, reply) => {
       const { betOnetoFour } = fastify.di.cradle.userController
       const user = await betOnetoFour(request, reply)

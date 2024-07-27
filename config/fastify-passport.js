@@ -9,7 +9,6 @@ const jwtOptions = {
 }
 
 
-
 function setPassport({ fastifyPassport, userModel, bcryptjs }) {
 
   // Local
@@ -49,8 +48,8 @@ function setPassport({ fastifyPassport, userModel, bcryptjs }) {
 
   // Session
   fastifyPassport.registerUserSerializer((user, done) => {
-    done(null, user._id);
-  });
+    done(null, user._id)
+  })
   fastifyPassport.registerUserDeserializer(async (id, done) => {
     try{
       const user = await userModel.findById(id).lean()

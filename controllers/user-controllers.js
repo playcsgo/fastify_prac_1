@@ -76,9 +76,10 @@ class UserController {
   // 3. Publish/Subscribe - login notice to friend or join room notice
 
   // 4. Routing - message to a specific user
-  // 像之前做的 升級裝備跟充值的那個用法. 
+  // 像之前做的 升級裝備跟充值的那個用法.
 
-  // 5. Topics - messqage to the same room
+  // 5. Topics - messqages to the specific room like VIP or lobby.
+  // * , # 
 
   // 6. Request/reply pattern - check bet, check found, refound
   async createUser(request, reply) {
@@ -88,12 +89,12 @@ class UserController {
     const correlationId = this.uuidv4()
     const channel = await this.rabbitMQ.getChannel()
     const replyQueName = 'reply_createdUser'
-    await channel.assertQueue(replyQueName, { durable: false })
+    await channel.assertQueue(replyQueName, { durable: true })
     
     
     // send createUser task to worker
     channel.sendToQueue('create_User', Buffer.from(msg), {
-      durable: false,
+      durable: true,
       correlationId: correlationId,
       replyTo: replyQueName
     }) 

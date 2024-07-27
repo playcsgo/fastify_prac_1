@@ -2,18 +2,24 @@
 // const userModel = require('../models/user')
 
 class worker1 {
-  constructor({ rabbitMQ, mongoose, userModel, bcryptjs }) {
+  constructor({ rabbitMQ, mongoose, userModel, bcryptjs, historyLong }) {
     this.rabbitMQ = rabbitMQ
     this.userModel = userModel
     this.mongoose = mongoose
     this.bcryptjs = bcryptjs
-    this.consumeBet()
+    this.historyLong = historyLong
+    this.init()
   }
 
-  async consumeBet() {
+  async init() {
     this.mongoose
     await this.rabbitMQ.consumeQueue('bet_que', this.processBet.bind(this))
     await this.rabbitMQ.consumeQueue('create_User', this.createUser.bind(this))  // 加上consume create_user的工作
+    // monitor
+    const subMonitorQueName = 'monitor_que_long'
+    await this.rabbitMQ.subscribe('monitor_exchange', subMonitorQueName)
+    await this.rabbitMQ.consumeQueue(subMonitorQueName, this.processMonitor.bind(this))
+
     console.log('worker1 ready..')
   }
 
@@ -58,6 +64,26 @@ class worker1 {
       { correlationId: msg.properties.correlationId }
       )
   }
+
+  async processMonitor(msg, ack) {
+    const { user, url } = JSON.parse(msg.content.toString())
+    const name = user.name
+    const historyLong = await this.historyLong.findOne({ name })
+
+    if (historyLong) {
+      historyLong.history.push(url)
+      await historyLong.save()
+    } else {
+      await this.historyLong.create({
+        name,
+        history: [url]
+      })
+    }
+    ack()
+    console.log(`processMonitor ${msg.fields.consumerTag} consume by worker1 with PID: ${process.pid}`)
+  }
+  
+  //end 
 }
 
 module.exports = worker1

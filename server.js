@@ -1,11 +1,11 @@
 // server.js
 const fastify = require('fastify')({
-  logger: true
+  logger: false
 })
 const awilixPlugin = require('./awilixSetup')
 const apiErrorHandler = require('./error/api-error-handler')
 const userRoutes = require('./routes/user')
-const fastifyCookie = require('@fastify/cookie');
+const fastifyCookie = require('@fastify/cookie')
 const fastifySession = require('@fastify/session')
 const fastifyPassport = require('@fastify/passport')
 
@@ -45,8 +45,8 @@ fastify.addHook('onReady', async () => {
     await fastify.di.cradle.setPassport
 
   } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
+    fastify.log.error(err)
+    process.exit(1)
   }
 })
 

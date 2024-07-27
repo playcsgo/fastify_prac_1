@@ -2,16 +2,24 @@
 // const { parentPort } = require('worker_threads')
 
 class worker2 {
-  constructor({ rabbitMQ, mongoose, userModel }) {
+  constructor({ rabbitMQ, mongoose, userModel, historyTemp }) {
     this.rabbitMQ = rabbitMQ
     this.userModel = userModel
     this.mongoose = mongoose
-    this.consumeBet()
+    this.historyTemp = historyTemp
+    this.init()
   }
 
-  async consumeBet() {
+  async init() {
     this.mongoose
+    // bet
     await this.rabbitMQ.consumeQueue('bet_que', this.processBet.bind(this))
+
+    // monitor
+    const subMonitorQueName = 'monitor_que_temp'
+    await this.rabbitMQ.subscribe('monitor_exchange', subMonitorQueName)
+    await this.rabbitMQ.consumeQueue(subMonitorQueName, this.processMonitor.bind(this))
+
     console.log('worker2 ready..')
   }
 
@@ -32,6 +40,25 @@ class worker2 {
     ack()
     console.log(`prcoessBet ${msg.fields.consumerTag} consume by worker2 with PID: ${process.pid}`)
   }
+
+  async processMonitor(msg, ack) {
+    const { user, url } = JSON.parse(msg.content.toString())
+    const name = user.name
+    const historyTemp = await this.historyTemp.findOne({ name })
+
+    if (historyTemp) {
+      historyTemp.history.push(url)
+      await historyTemp.save()
+    } else {
+      await this.historyTemp.create({
+        name,
+        history: [url]
+      })
+    }
+    ack()
+    console.log(`processMonitor ${msg.fields.consumerTag} consume by worker2 with PID: ${process.pid}`)
+  }
+  //end 
 }
 
 module.exports = worker2
