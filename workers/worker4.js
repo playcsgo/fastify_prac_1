@@ -1,7 +1,7 @@
 // work2
 // const { parentPort } = require('worker_threads')
 
-class worker2 {
+class worker4 {
   constructor({ rabbitMQ, mongoose, userModel, historyTemp }) {
     this.rabbitMQ = rabbitMQ
     this.userModel = userModel
@@ -20,7 +20,7 @@ class worker2 {
     await this.rabbitMQ.subscribe('monitor_exchange', subMonitorQueName)
     await this.rabbitMQ.consumeQueue(subMonitorQueName, this.processMonitor.bind(this))
 
-    console.log('worker2 ready..')
+    console.log('worker4 ready..')
   }
 
   async processBet(msg, ack) {
@@ -38,7 +38,7 @@ class worker2 {
     }
     await user.save()
     ack()
-    console.log(`prcoessBet ${msg.fields.deliveryTag} consume by worker2 with PID: ${process.pid}`)
+    console.log(`prcoessBet ${msg.fields.deliveryTag} consume by worker4 with PID: ${process.pid}`)
   }
 
   async processMonitor(msg, ack) {
@@ -56,12 +56,12 @@ class worker2 {
       })
     }
     ack()
-    console.log(`processMonitor ${msg.fields.consumerTag} consume by worker2 with PID: ${process.pid}`)
+    console.log(`processMonitor ${msg.fields.consumerTag} consume by worker4 with PID: ${process.pid}`)
   }
   //end 
 }
 
-module.exports = worker2
+module.exports = worker4
 
 /*
 

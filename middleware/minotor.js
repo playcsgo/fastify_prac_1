@@ -5,15 +5,16 @@ module.exports = ({ rabbitMQ }) => {
       const url = request.raw.url
       const user = request.user
       const msg = JSON.stringify({ url, user })
+      
       rabbitMQ.publishMQ(
         exchangeName = 'monitor_exchange',
         exchangeType = 'fanout',
-        routingKey = '',
+        routingKey = '_routingKey',
         message = msg,
         { durable: true }
       )
 
-      done()
+      // done()  //會導致重複執行
     } catch(err) {
       throw new Error(err)
     }

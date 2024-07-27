@@ -1,7 +1,7 @@
 // const mongoose = require('mongoose')
 // const userModel = require('../models/user')
 
-class worker1 {
+class worker3 {
   constructor({ rabbitMQ, mongoose, userModel, bcryptjs, historyLong }) {
     this.rabbitMQ = rabbitMQ
     this.userModel = userModel
@@ -25,7 +25,7 @@ class worker1 {
     await this.rabbitMQ.subscribe('monitor_exchange', subMonitorQueName)
     await this.rabbitMQ.consumeQueue(subMonitorQueName, this.processMonitor.bind(this))
 
-    console.log('worker1 ready..')
+    console.log('worker3 ready..')
   }
 
   async processBet(msg, ack) {
@@ -44,7 +44,7 @@ class worker1 {
     await user.save()
     ack()
 
-    console.log(`prcoessBet ${msg.fields.deliveryTag} consume by worker1 with PID: ${process.pid}`)
+    console.log(`prcoessBet ${msg.fields.deliveryTag} consume by worker3 with PID: ${process.pid}`)
   }
 
   async createUser(msg, ack) {
@@ -85,10 +85,10 @@ class worker1 {
       })
     }
     ack()
-    console.log(`processMonitor ${msg.fields.consumerTag} consume by worker1 with PID: ${process.pid}`)
+    console.log(`processMonitor ${msg.fields.consumerTag} consume by worker3 with PID: ${process.pid}`)
   }
   
   //end 
 }
 
-module.exports = worker1
+module.exports = worker3

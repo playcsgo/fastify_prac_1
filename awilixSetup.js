@@ -10,6 +10,9 @@ const UserController = require('./controllers/user-controllers')
 const RabbitMQ = require('./config/rabbitmq')
 const Worker1 = require('./workers/worker1')
 const Worker2 = require('./workers/worker2')
+const Worker3 = require('./workers/worker3')
+const Worker4 = require('./workers/worker4')
+
 const { v4: uuidv4 } = require('uuid')
 
 // passport
@@ -42,6 +45,8 @@ function awilixPlugin(fastify, opts, done) {
     rabbitMQ: asClass(RabbitMQ).singleton(),
     worker1: asClass(Worker1).singleton(),
     worker2: asClass(Worker2).singleton(),
+    worker3: asClass(Worker3).singleton(),
+    worker4: asClass(Worker4).singleton(),
     uuidv4: asValue(uuidv4),
 
     // passport

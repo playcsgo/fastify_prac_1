@@ -37,6 +37,8 @@ fastify.addHook('onReady', async () => {
     // init works
     await fastify.di.cradle.worker1
     await fastify.di.cradle.worker2
+    // await fastify.di.cradle.worker3
+    // await fastify.di.cradle.worker4
 
     // check mongoDB connection
     await fastify.di.cradle.mongoose

@@ -27,6 +27,7 @@ class RabbitMQ {
   async consumeQueue(queueName, callback) {
     const channel = await this.getChannel()
     await channel.assertQueue(queueName, { durable: true }) //若有改 false, 需與controller一致 15672也要重新設置(刪除)
+    channel.prefetch(1)
     channel.consume(queueName, (msg) => {
       callback(msg, () => channel.ack(msg))
     }, { noAck: false })
@@ -35,7 +36,7 @@ class RabbitMQ {
   async publishMQ(exchangeName, exchangeType, routingKey, message, options = {}) {
     const channel = await this.getChannel()
     await channel.assertExchange(exchangeName, exchangeType, { durable: true })
-    channel.publish(exchangeName, routingKey, Buffer.from(message), options)
+    await channel.publish(exchangeName, routingKey, Buffer.from(message), options)
   }
 
   async subscribe(exchange, queName) {
