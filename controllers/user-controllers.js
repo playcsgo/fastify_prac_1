@@ -128,7 +128,7 @@ class UserController {
       const historyLong = await this.historyLong.find().lean()
       const historyTemp = await this.historyTemp.find().lean()
       
-      return {historyLong, historyTemp }
+      return reply.send ({ historyLong, historyTemp })
 
     } catch (err) {
       throw new Error(err)

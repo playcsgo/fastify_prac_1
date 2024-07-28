@@ -5,8 +5,7 @@ module.exports = function userRoutes (fastify, opts, done) {
 
   //check history
   fastify.get('/history', async(request, reply) => {
-    const data = await fastify.di.cradle.userController.showHistory(request, reply)
-    reply.send(data)
+    await fastify.di.cradle.userController.showHistory(request, reply)
   })
 
   //signin
