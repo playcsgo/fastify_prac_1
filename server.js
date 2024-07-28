@@ -5,10 +5,10 @@ const fastify = require('fastify')({
 const awilixPlugin = require('./awilixSetup')
 const apiErrorHandler = require('./error/api-error-handler')
 const userRoutes = require('./routes/user')
+const fibRoutes = require('./routes/fib')
 const fastifyCookie = require('@fastify/cookie')
 const fastifySession = require('@fastify/session')
 const fastifyPassport = require('@fastify/passport')
-
 
 // apply worker_threads
 // const { Worker } = require('worker_threads')
@@ -29,6 +29,7 @@ fastify.setErrorHandler(apiErrorHandler)
 
 // register routes
 fastify.register(userRoutes, { prefix: '/v1' })
+fastify.register(fibRoutes, { prefix: '/fib' })
 
 
 // init workers
