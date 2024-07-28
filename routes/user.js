@@ -3,6 +3,12 @@ module.exports = function userRoutes (fastify, opts, done) {
   // because routes register with prefix '/v1'
   // POST '/users' should be POST '/v1/users' while requesting
 
+  //check history
+  fastify.get('/history', async(request, reply) => {
+    const data = await fastify.di.cradle.userController.showHistory(request, reply)
+    reply.send(data)
+  })
+
   //signin
   fastify.post('/signin', 
   { preValidation: fastify.di.cradle.fastifyPassport.authenticate('local', { session: false }) },
@@ -47,6 +53,8 @@ module.exports = function userRoutes (fastify, opts, done) {
     const user = await addOrRemoveFriend(request, reply)
     reply.send({ data: user })
   })
+
+
 
   // enterRoomGreeting
   

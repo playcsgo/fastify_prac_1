@@ -1,12 +1,15 @@
 // controllers/user-controller with 6 RabbitMQ patterns
 class UserController {
-  constructor({ userModel, rabbitMQ, uuidv4, jwt }) {
+  constructor({ userModel, rabbitMQ, uuidv4, jwt, historyLong, historyTemp }) {
     this.userModel = userModel
+    this.historyLong = historyLong
+    this.historyTemp = historyTemp
     this.rabbitMQ = rabbitMQ
     this.createUser = this.createUser.bind(this)
     this.getUser = this.getUser.bind(this)
     this.betOnetoFour = this.betOnetoFour.bind(this)
     this.addOrRemoveFriend = this.addOrRemoveFriend.bind(this)
+    this.showHistory = this.showHistory.bind(this)
     this.jwt = jwt
     this.uuidv4 = uuidv4
   }
@@ -114,6 +117,19 @@ class UserController {
     try {
       const user = await this.userModel.findById(request.params.id).lean()
       return { user }
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
+
+  async showHistory(request, reply) {
+    try {
+
+      const historyLong = await this.historyLong.find().lean()
+      const historyTemp = await this.historyTemp.find().lean()
+      
+      return {historyLong, historyTemp }
+
     } catch (err) {
       throw new Error(err)
     }
